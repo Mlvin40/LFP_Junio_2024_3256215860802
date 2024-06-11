@@ -59,9 +59,11 @@ class Lexer:
                     
                     lexema = ""
                     estado = 0
-                    
-                    if not caracter.isspace() and not self.isCaracterValido(caracter):
-                        self.errores.append(TokenError("Carácter inesperado en identificador", caracter, linea, columna - len(lexema)))
+                
+                    #si el caracter no es un espacio en blanco se guarda el caracter para poder analizarlo
+                    if not caracter.isspace():
+                        lexema+= caracter
+   
                     continue
 
             elif estado == 2:
@@ -103,7 +105,7 @@ class Lexer:
             
 # Ejemplo de uso
 contenido_prueba = """
-nombre @-> 'titulo';
+nombre-> 'titulo';
 nodos -> [
 'nombre_nodo1': 'texto_nodo1',
 'nombre_nodo2': 'texto nodo2',
@@ -114,6 +116,7 @@ conexiones ->[
 {'nombre_nodo3' > 'nombre_nodo2'}
 ]
 """
+
 lexer = Lexer(contenido_prueba)
 lexer.analizar()
 lexer.imprimir_tokens_y_errores()

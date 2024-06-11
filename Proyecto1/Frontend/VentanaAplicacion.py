@@ -1,3 +1,4 @@
+
 #Clase en donde se creara todo relacionado a la gui
 from tkinter import filedialog, Tk, Label, Button, Text, Canvas, ttk
 from PIL import Image, ImageTk
