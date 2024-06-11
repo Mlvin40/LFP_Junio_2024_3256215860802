@@ -41,7 +41,7 @@ class Lexer:
                 elif caracter.isspace():
                     if caracter == '\n':
                         linea += 1
-                        columna = 0
+                        columna = 1
                     columna += 1
                 else:
                     self.errores.append(TokenError("Carácter inesperado", caracter, linea, columna - len(lexema)))
@@ -114,7 +114,6 @@ conexiones ->[
 {'nombre_nodo3' > 'nombre_nodo2'}
 ]
 """
-
 lexer = Lexer(contenido_prueba)
 lexer.analizar()
 lexer.imprimir_tokens_y_errores()
