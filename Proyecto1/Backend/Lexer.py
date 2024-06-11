@@ -1,3 +1,8 @@
+from Token import Token
+from Error import TokenError
+#######################
+
+
 class Lexer:
     def __init__(self, entrada) -> None:
         self.entrada = entrada
@@ -31,8 +36,7 @@ class Lexer:
                     inicio_lexema_columna = columna
                 elif self.isCaracterValido(caracter):
                     lexema += caracter
-                    token = f'TOKEN: Símbolo, Lexema: {lexema}, Línea: {linea}, Columna: {columna}'
-                    self.tokens.append(token)
+                    self.tokens.append(Token("Símbolo", lexema, linea, columna - len(lexema)))
                     lexema = ""
                 elif caracter.isspace():
                     if caracter == '\n':
@@ -40,57 +44,55 @@ class Lexer:
                         columna = 0
                     columna += 1
                 else:
-                    self.error_lexico("Carácter inesperado", caracter, linea, columna)
+                    self.errores.append(TokenError("Carácter inesperado", caracter, linea, columna - len(lexema)))
                     columna += 1
 
             elif estado == 1:
-                if caracter.isalnum() or caracter == '_':
+                if caracter.isalnum():
                     lexema += caracter
                 else:
                     if lexema in self.keywords:
-                        token = f'TOKEN: Palabra Reservada, Lexema: {lexema}, Línea: {linea}, Columna: {inicio_lexema_columna}'
+                        self.tokens.append(Token("Palabra Reservada", lexema, linea, columna - len(lexema)))
                     else:
-                        #esto seria error
-                        token = f'ERROR: Identificador Desconocido, Lexema: {lexema}, Línea: {linea}, Columna: {inicio_lexema_columna}'
-                    self.tokens.append(token)
+                        #Esto seria error
+                        self.errores.append(TokenError("Identificador Desconocido", lexema, linea, columna - len(lexema)))
+                    
                     lexema = ""
                     estado = 0
+                    
+                    if not caracter.isspace() and not self.isCaracterValido(caracter):
+                        self.errores.append(TokenError("Carácter inesperado en identificador", caracter, linea, columna - len(lexema)))
                     continue
 
             elif estado == 2:
                 if caracter == '>':
                     lexema += caracter
-                    token = f'TOKEN: FLECHA, Lexema: {lexema}, Línea: {linea}, Columna: {inicio_lexema_columna}'
-                    self.tokens.append(token)
+                    self.tokens.append(Token("FLECHA", lexema, linea, columna - len(lexema)))
                     lexema = ""
                     estado = 0
+                       
                 else:
-                    self.error_lexico("Carácter inesperado", lexema, linea, inicio_lexema_columna)
+                    lexema+= caracter
+                    self.errores.append(TokenError("Carácter inesperado", lexema, linea, columna - len(lexema)))
                     lexema = ""
                     estado = 0
                     if not caracter.isspace():
                         columna -= 1
-
+                        
             elif estado == 3:
                 lexema += caracter
                 if caracter == "'":
-                    token = f'TOKEN: String, Lexema: {lexema}, Línea: {linea}, Columna: {inicio_lexema_columna}'
-                    self.tokens.append(token)
+                    self.tokens.append(Token("String", lexema, linea, columna - len(lexema)))
                     lexema = ""
                     estado = 0
                 elif caracter == '\n':
-                    self.errores.append
-                    self.error_lexico("Fin de línea inesperado en cadena", lexema, linea, inicio_lexema_columna)
+                    self.errores.append(TokenError("Fin de línea inesperado en cadena", lexema, linea, columna - len(lexema)))
                     lexema = ""
                     estado = 0
-
+                    
             if not caracter.isspace() or estado == 3:
                 columna += 1
-
-    def error_lexico(self, mensaje, lexema, linea, columna):
-        error = f'ERROR LEXICO: {mensaje}, Lexema: {lexema}, Línea: {linea}, Columna: {columna}'
-        self.tokens.append(error)
-    
+                
     def imprimir_tokens_y_errores(self):
         print("Tokens válidos:")
         for token in self.tokens:
@@ -98,17 +100,17 @@ class Lexer:
         print("\nErrores léxicos:")
         for error in self.errores:
             print(error)
-
+            
 # Ejemplo de uso
 contenido_prueba = """
-nombre -> 'titulo';
+nombre @-> 'titulo';
 nodos -> [
 'nombre_nodo1': 'texto_nodo1',
 'nombre_nodo2': 'texto nodo2',
 'nombre_nodo3': 'texto_nodo3'
 ];
 conexiones ->[
-{'nombre_   nodo1' > 'nombre_nodo2'},
+{'nombre_nodo1' > 'nombre_nodo2'},
 {'nombre_nodo3' > 'nombre_nodo2'}
 ]
 """
