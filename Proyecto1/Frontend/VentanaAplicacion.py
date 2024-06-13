@@ -1,3 +1,24 @@
+#clase donde se crea la interfaz grafica de la aplicacion
+import sys
+import os
+
+# Añadir el directorio raíz del proyecto al sys.path
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from Backend.Reportes import Reporte
+from Backend.Lexer import Lexer
+
+contenido_prueba = """
+nombre -> 'titulo';
+nodos -> [
+'nombre_nodo1': 'texto_nodo1',
+'nombre_nodo2': 'texto nodo2',
+'nombre_nodo3': 'texto_nodo3'
+];
+conexiones ->[
+{'nombre_nodo1' > 'nombre_nodo2'},
+{'nombre_nodo3' > 'nombre_nodo2'}
+]
+"""
 
 #Clase en donde se creara todo relacionado a la gui
 from tkinter import filedialog, Tk, Label, Button, Text, Canvas, ttk
@@ -10,7 +31,7 @@ def cargar_archivo():
         with open(archivo, 'r') as file:
             contenido = file.read()
             print("Contenido del archivo:", contenido)
-            
+
 def ejecutar_archivo():
     print("Ejecutando Archivo")
     
@@ -23,6 +44,13 @@ def reporte_T():
         try:
             # Crear el archivo con el nombre especificado en la ubicación seleccionada
             with open(ruta_reporte, 'w') as file:
+                lex = Lexer(lex.contenido_prueba)
+                lex.analizar()
+                gen = Reporte(lex.tokens, "Tokens")
+                
+                html = gen.obtenerReporte()
+                file.write(html)
+      
                 #Agregar el contenido del reporte seleccionado
                 
                 print("Reporte guardado en:", ruta_reporte)

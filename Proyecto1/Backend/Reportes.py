@@ -1,21 +1,22 @@
 class Reporte:
-    def __init__(self, entrada) -> None:
+    def __init__(self, entrada, tipo) -> None:
         self.entrada = entrada
+        self.tipo = tipo
         
     def obtenerReporte(self):
+        contenido = ""
+        for token in self.entrada:
+            #contenido += f"{str(token)}<br/>\n"
+            
+            contenido += f"<p>{str(token)}</p>\n"
         
-        cotenido = ""
-        
-        for lineas in self.entrada:
-            cotenido += lineas + "<\n>"
-        
-        reporte= ("<html>" + "\n"
-                + " <head>" + "\n" 
-                + "     <title>Reporte Partida</title>" + "\n"
-                + " </head>" + "\n"
-                + "     <body>" + "\n"
-                + cotenido
-                + "     </body>" + "\n"
-                + "</html>");
-        return cotenido
+        reporte = f"""<html>
+                        <head>
+                            <title>Reporte {self.tipo}</title>
+                        </head>
+                        <body>
+{contenido}
+                        </body>
+                      </html>"""
+        return reporte
         

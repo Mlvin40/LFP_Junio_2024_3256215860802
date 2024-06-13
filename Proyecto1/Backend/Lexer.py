@@ -1,5 +1,8 @@
-from Token import Token
-from Error import TokenError
+from Backend.Token import Token
+from Backend.Error import TokenError
+from Backend.Reportes import Reporte
+
+# Clase para analizar el código fuente y generar tokens
 #######################
 
 
@@ -12,6 +15,9 @@ class Lexer:
 
     def isCaracterValido(self, caracter):
         return caracter in [';', '[', ']', ':', ',', '{', '}', '>']
+    
+    def esPunto(self, caracter):
+        return caracter == '.'
 
     def analizar(self):
         linea = 1
@@ -38,6 +44,11 @@ class Lexer:
                     lexema += caracter
                     self.tokens.append(Token("Símbolo", lexema, linea, columna - len(lexema)))
                     lexema = ""
+                    
+                elif caracter == '.':
+                    lexema += caracter
+                    estado = 5
+                    
                 elif caracter.isspace():
                     if caracter == '\n':
                         linea += 1
@@ -92,6 +103,19 @@ class Lexer:
                     lexema = ""
                     estado = 0
                     
+            elif estado == 5:
+                if caracter == '.':
+                    lexema += caracter
+                    if lexema == '...':
+                        self.tokens.append(Token("Separador", lexema, linea, columna - len(lexema)))
+                        lexema = ""
+                        estado = 0 
+                else :
+                    lexema += caracter  
+                    self.errores.append(TokenError("Carácter inesperado", lexema, linea, columna - len(lexema)))
+                    lexema = ""
+                    estado = 0
+
             if not caracter.isspace() or estado == 3:
                 columna += 1
                 
@@ -105,7 +129,13 @@ class Lexer:
             
 # Ejemplo de uso
 contenido_prueba = """
-nombre-> 'titulo';
+
+.
+..
+... 
+....
+
+nombre -> 'titulo';
 nodos -> [
 'nombre_nodo1': 'texto_nodo1',
 'nombre_nodo2': 'texto nodo2',
@@ -117,6 +147,29 @@ conexiones ->[
 ]
 """
 
+
+"""from tkinter import filedialog, Tk, Label, Button, Text, Canvas, ttk
+
+def reporte_T():
+    ruta_reporte = filedialog.asksaveasfilename(defaultextension=".html", filetypes=[("Archivos HTML", "*.html")])
+    
+    # Verificar si se ha seleccionado una ubicación y un nombre de archivo
+    if ruta_reporte:
+        try:
+            # Crear el archivo con el nombre especificado en la ubicación seleccionada
+            with open(ruta_reporte, 'w') as file:
+                file.write(htmp)
+                
+                print("Reporte guardado en:", ruta_reporte)
+        except Exception as e:
+            print("Error al guardar el reporte:", e)
+
+
 lexer = Lexer(contenido_prueba)
 lexer.analizar()
+
 lexer.imprimir_tokens_y_errores()
+repor = Reporte(lexer.tokens, "Tokens")
+htmp = repor.obtenerReporte()
+reporte_T()
+print(htmp)"""
