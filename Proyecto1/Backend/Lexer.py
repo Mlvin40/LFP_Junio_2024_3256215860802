@@ -12,13 +12,22 @@ class Lexer:
         self.keywords = {'nombre', 'nodos', 'conexiones'}
         self.tokens = []  # Lista para almacenar tokens válidos
         self.errores = []  # Lista para almacenar errores léxicos
+        
+        self.ERROR_LEXICO ="Identificador Desconocido"
+        self.SIMBOLO = "Símbolo"
+        self.PALABRA_RESERVADA = "Palabra Reservada"
+        self.FLECHA = "Flecha"
+        self.STRING = "String"
+        self.SEPARADOR = "Separador"
+        
+        
 
     def isCaracterValido(self, caracter):
         return caracter in [';', '[', ']', ':', ',', '{', '}', '>']
     
     def esPunto(self, caracter):
         return caracter == '.'
-
+    
     def analizar(self):
         linea = 1
         columna = 1
@@ -42,7 +51,7 @@ class Lexer:
                     inicio_lexema_columna = columna
                 elif self.isCaracterValido(caracter):
                     lexema += caracter
-                    self.tokens.append(Token("Símbolo", lexema, linea, columna - len(lexema)))
+                    self.tokens.append(Token(self.SIMBOLO, lexema, linea, columna - len(lexema)))
                     lexema = ""
                     
                 elif caracter == '.':
@@ -55,7 +64,7 @@ class Lexer:
                         columna = 1
                     columna += 1
                 else:
-                    self.errores.append(TokenError("Carácter inesperado", caracter, linea, columna - len(lexema)))
+                    self.errores.append(TokenError(self.ERROR_LEXICO, caracter, linea, columna - len(lexema)))
                     columna += 1
 
             elif estado == 1:
@@ -63,10 +72,10 @@ class Lexer:
                     lexema += caracter
                 else:
                     if lexema in self.keywords:
-                        self.tokens.append(Token("Palabra Reservada", lexema, linea, columna - len(lexema)))
+                        self.tokens.append(Token(self.PALABRA_RESERVADA, lexema, linea, columna - len(lexema)))
                     else:
                         #Esto seria error
-                        self.errores.append(TokenError("Identificador Desconocido", lexema, linea, columna - len(lexema)))
+                        self.errores.append(TokenError(self.ERROR_LEXICO, lexema, linea, columna - len(lexema)))
                     
                     lexema = ""
                     estado = 0
@@ -80,13 +89,13 @@ class Lexer:
             elif estado == 2:
                 if caracter == '>':
                     lexema += caracter
-                    self.tokens.append(Token("FLECHA", lexema, linea, columna - len(lexema)))
+                    self.tokens.append(Token(self.FLECHA, lexema, linea, columna - len(lexema)))
                     lexema = ""
                     estado = 0
                        
                 else:
                     lexema+= caracter
-                    self.errores.append(TokenError("Carácter inesperado", lexema, linea, columna - len(lexema)))
+                    self.errores.append(TokenError(self.ERROR_LEXICO, lexema, linea, columna - len(lexema)))
                     lexema = ""
                     estado = 0
                     if not caracter.isspace():
@@ -95,24 +104,24 @@ class Lexer:
             elif estado == 3:
                 lexema += caracter
                 if caracter == "'":
-                    self.tokens.append(Token("String", lexema, linea, columna - len(lexema)))
+                    self.tokens.append(Token(self.STRING, lexema, linea, columna - len(lexema)))
                     lexema = ""
                     estado = 0
                 elif caracter == '\n':
-                    self.errores.append(TokenError("Fin de línea inesperado en cadena", lexema, linea, columna - len(lexema)))
+                    self.errores.append(TokenError(self.ERROR_LEXICO, lexema, linea, columna - len(lexema)))
                     lexema = ""
                     estado = 0
                     
             elif estado == 5:
-                if caracter == '.':
+                if self.esPunto(caracter):
                     lexema += caracter
                     if lexema == '...':
-                        self.tokens.append(Token("Separador", lexema, linea, columna - len(lexema)))
+                        self.tokens.append(Token(self.SEPARADOR, lexema, linea, columna - len(lexema)))
                         lexema = ""
                         estado = 0 
                 else :
                     lexema += caracter  
-                    self.errores.append(TokenError("Carácter inesperado", lexema, linea, columna - len(lexema)))
+                    self.errores.append(TokenError(self.ERROR_LEXICO, lexema, linea, columna - len(lexema)))
                     lexema = ""
                     estado = 0
 
@@ -134,7 +143,6 @@ contenido_prueba = """
 ..
 ... 
 ....
-
 nombre -> 'titulo';
 nodos -> [
 'nombre_nodo1': 'texto_nodo1',
@@ -147,29 +155,3 @@ conexiones ->[
 ]
 """
 
-
-"""from tkinter import filedialog, Tk, Label, Button, Text, Canvas, ttk
-
-def reporte_T():
-    ruta_reporte = filedialog.asksaveasfilename(defaultextension=".html", filetypes=[("Archivos HTML", "*.html")])
-    
-    # Verificar si se ha seleccionado una ubicación y un nombre de archivo
-    if ruta_reporte:
-        try:
-            # Crear el archivo con el nombre especificado en la ubicación seleccionada
-            with open(ruta_reporte, 'w') as file:
-                file.write(htmp)
-                
-                print("Reporte guardado en:", ruta_reporte)
-        except Exception as e:
-            print("Error al guardar el reporte:", e)
-
-
-lexer = Lexer(contenido_prueba)
-lexer.analizar()
-
-lexer.imprimir_tokens_y_errores()
-repor = Reporte(lexer.tokens, "Tokens")
-htmp = repor.obtenerReporte()
-reporte_T()
-print(htmp)"""
