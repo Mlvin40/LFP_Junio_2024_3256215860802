@@ -1,3 +1,9 @@
+import sys
+import os
+
+# Añadir el directorio raíz del proyecto al sys.path
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from Backend.Token import Token
 from Backend.Error import TokenError
 from Backend.Reportes import Reporte
@@ -7,8 +13,8 @@ from Backend.Reportes import Reporte
 
 
 class Lexer:
-    def __init__(self, entrada) -> None:
-        self.entrada = entrada
+    def __init__(self) -> None:
+        self.entrada = ""
         self.keywords = {'nombre', 'nodos', 'conexiones'}
         self.tokens = []  # Lista para almacenar tokens válidos
         self.errores = []  # Lista para almacenar errores léxicos
@@ -21,37 +27,40 @@ class Lexer:
         self.SEPARADOR = "Separador"
         
         
-
     def isCaracterValido(self, caracter):
         return caracter in [';', '[', ']', ':', ',', '{', '}', '>']
     
     def esPunto(self, caracter):
         return caracter == '.'
     
-    def analizar(self):
+    def analizar(self, entrada):
+        #guarda la entrada de texto en la variable entrada para poder analizarla
+        self.entrada = entrada
+        
         linea = 1
         columna = 1
         lexema = ""
         estado = 0
-        inicio_lexema_columna = 1  # Guardar la columna de inicio de cada lexema
-
+        
         for caracter in self.entrada:
+            #mantiene la columna en la que se encuentra el lexema actual
+            columna_actual = columna - len(lexema)
             if estado == 0:
                 if caracter.isalpha():
                     lexema += caracter
                     estado = 1
-                    inicio_lexema_columna = columna
+                    
                 elif caracter == "-":
                     lexema += caracter
                     estado = 2
-                    inicio_lexema_columna = columna
+                    
                 elif caracter == "'":
                     lexema += caracter
                     estado = 3
-                    inicio_lexema_columna = columna
+                    
                 elif self.isCaracterValido(caracter):
                     lexema += caracter
-                    self.tokens.append(Token(self.SIMBOLO, lexema, linea, columna - len(lexema)))
+                    self.tokens.append(Token(self.SIMBOLO, lexema, linea, columna_actual))
                     lexema = ""
                     
                 elif caracter == '.':
@@ -59,23 +68,25 @@ class Lexer:
                     estado = 5
                     
                 elif caracter.isspace():
-                    if caracter == '\n':
+                    if caracter == '\n': #si el caracter es un salto de linea se aumenta el contador de lineas y se reinicia el contador de columnas
                         linea += 1
                         columna = 1
                     columna += 1
+                    
                 else:
-                    self.errores.append(TokenError(self.ERROR_LEXICO, caracter, linea, columna - len(lexema)))
+                    self.errores.append(TokenError(self.ERROR_LEXICO, caracter, linea, columna_actual))
                     columna += 1
 
             elif estado == 1:
                 if caracter.isalnum():
                     lexema += caracter
+                    
                 else:
                     if lexema in self.keywords:
-                        self.tokens.append(Token(self.PALABRA_RESERVADA, lexema, linea, columna - len(lexema)))
+                        self.tokens.append(Token(self.PALABRA_RESERVADA, lexema, linea, columna_actual))
                     else:
                         #Esto seria error
-                        self.errores.append(TokenError(self.ERROR_LEXICO, lexema, linea, columna - len(lexema)))
+                        self.errores.append(TokenError(self.ERROR_LEXICO, lexema, linea, columna_actual))
                     
                     lexema = ""
                     estado = 0
@@ -89,13 +100,13 @@ class Lexer:
             elif estado == 2:
                 if caracter == '>':
                     lexema += caracter
-                    self.tokens.append(Token(self.FLECHA, lexema, linea, columna - len(lexema)))
+                    self.tokens.append(Token(self.FLECHA, lexema, linea, columna_actual))
                     lexema = ""
                     estado = 0
                        
                 else:
                     lexema+= caracter
-                    self.errores.append(TokenError(self.ERROR_LEXICO, lexema, linea, columna - len(lexema)))
+                    self.errores.append(TokenError(self.ERROR_LEXICO, lexema, linea, columna_actual))
                     lexema = ""
                     estado = 0
                     if not caracter.isspace():
@@ -104,24 +115,26 @@ class Lexer:
             elif estado == 3:
                 lexema += caracter
                 if caracter == "'":
-                    self.tokens.append(Token(self.STRING, lexema, linea, columna - len(lexema)))
+                    self.tokens.append(Token(self.STRING, lexema, linea, columna_actual))
                     lexema = ""
                     estado = 0
                 elif caracter == '\n':
-                    self.errores.append(TokenError(self.ERROR_LEXICO, lexema, linea, columna - len(lexema)))
+                    self.errores.append(TokenError(self.ERROR_LEXICO, lexema, linea, columna_actual))
                     lexema = ""
                     estado = 0
+                    linea += 1
+                    columna = 1
                     
             elif estado == 5:
                 if self.esPunto(caracter):
                     lexema += caracter
                     if lexema == '...':
-                        self.tokens.append(Token(self.SEPARADOR, lexema, linea, columna - len(lexema)))
+                        self.tokens.append(Token(self.SEPARADOR, lexema, linea, columna_actual))
                         lexema = ""
                         estado = 0 
                 else :
                     lexema += caracter  
-                    self.errores.append(TokenError(self.ERROR_LEXICO, lexema, linea, columna - len(lexema)))
+                    self.errores.append(TokenError(self.ERROR_LEXICO, lexema, linea, columna_actual))
                     lexema = ""
                     estado = 0
 
@@ -138,11 +151,6 @@ class Lexer:
             
 # Ejemplo de uso
 contenido_prueba = """
-
-.
-..
-... 
-....
 nombre -> 'titulo';
 nodos -> [
 'nombre_nodo1': 'texto_nodo1',
@@ -154,4 +162,8 @@ conexiones ->[
 {'nombre_nodo3' > 'nombre_nodo2'}
 ]
 """
+
+lexer = Lexer()
+lexer.analizar(contenido_prueba)
+lexer.imprimir_tokens_y_errores()
 
