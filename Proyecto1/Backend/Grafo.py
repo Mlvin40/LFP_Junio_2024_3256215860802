@@ -11,6 +11,7 @@ from graphviz import Digraph
 class Grafo:
     def __init__(self):
         self.lexer = Lexer()
+        self.imagenes_procesadas = []
 
     # Este metodo se encarga de devolver una lista de todas las imagenes encontradas en el archivo de entrada
     def escanear_tokens(self, contenido):
@@ -18,15 +19,20 @@ class Grafo:
         imagenes_procesadas = []
 
         for tokens in self.lexer.lista_imagenes:
+            nombre = self.extraer_nombre(tokens)
             nodos = self.extraer_nodos(tokens)
             conexiones = self.extraer_conexiones(tokens)
             imagenes_procesadas.append({
+                "nombre": nombre,
                 "nodos": nodos,
                 "conexiones": conexiones
             })
-
-        return imagenes_procesadas
-
+        
+        self.imagenes_procesadas = imagenes_procesadas
+    
+    def extraer_nombre(self, tokens):
+        return tokens[2].lexema
+    
     # Este metodo se encarga de extraer todos los nodos existentes en el archivo de entrada
     def extraer_nodos(self, tokens):
         NODOS = []
@@ -75,11 +81,35 @@ class Grafo:
                 i += 1
                 
         return CONEXIONES
+
+    def mostrar_grafo(self, posicion):
+        """if posicion < 0 or posicion >= len(self.imagenes_procesadas):
+            print(f"No hay imagen en la posición {posicion}")
+            return"""
+            
+        imagen = self.imagenes_procesadas[posicion]
+        dot = Digraph(comment="Grafo") 
+        dot.attr(rankdir='LR')  # Establece la dirección de las conexiones
+        label=imagen["nombre"]
+        
+        
+        dot.attr(label=f'"{imagen["nombre"]}"') #Se agrega el nombre del grafo en un label
+        
+        #Con este bucle se agregan los nodos al grafo
+        for nodo in imagen["nodos"]:
+            dot.node(nodo[0], nodo[1])
+            
+        #Con este bucle se agregan las conexiones al grafo
+        for conexion in imagen["conexiones"]:
+            dot.edge(conexion[0], conexion[1])
+        
+        # Renderizamos el grafo
+        dot.render(f'imagen{posicion + 1}', format='png', view=True)
     
 
 # Ejemplo de uso
 contenido_prueba = """
-nombre -> 'titulo';
+nombre -> 'El mejor grafo';
 nodos -> [
 'nombre_nodo1': 'texto_nodo1',
 'nombre_nodo2': 'texto nodo2',
@@ -92,10 +122,11 @@ conexiones ->[
 """
 
 grafo = Grafo()
-imagenes_procesadas = grafo.escanear_tokens(contenido_prueba)
+grafo.escanear_tokens(contenido_prueba)
 
-for idx, imagen in enumerate(imagenes_procesadas):
+for idx, imagen in enumerate(grafo.imagenes_procesadas):
     print(f"Imagen {idx + 1}:")
+    print("Nombre:", imagen["nombre"])
     print("Nodos:")
     for nodo in imagen["nodos"]:
         print(list(nodo))  # Imprime cada nodo como una lista 
@@ -103,4 +134,6 @@ for idx, imagen in enumerate(imagenes_procesadas):
     for conexion in imagen["conexiones"]:
         print(list(conexion))  # Imprime cada conexión como una lista 
     print()
-    
+
+grafo.mostrar_grafo(0)
+
