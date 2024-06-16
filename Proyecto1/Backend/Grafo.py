@@ -1,20 +1,13 @@
-import sys
-import os
-
-# Añadir el directorio raíz del proyecto al sys.path
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
 from tkinter import PhotoImage, Label
 from PIL import Image, ImageTk
-
 from Backend.Lexer import Lexer
 from graphviz import Digraph
-
 
 class Grafo:
     def __init__(self):
         self.lexer = Lexer()
         self.imagenes_procesadas = []
+        self.PATH_IMAGEN = 'Grafos/imgGrafo'
 
     # Este metodo se encarga de devolver una lista de todas las imagenes encontradas en el archivo de entrada
     def escanear_tokens(self, contenido):
@@ -96,14 +89,12 @@ class Grafo:
 
     #En base al numero de opcion seleccionada en el combobox se mostrara el grafo correspondiente
     def mostrar_grafo(self, posicion, label):
-        if posicion < 0 or posicion >= len(self.imagenes_procesadas):
-            print(f"No hay imagen en la posición {posicion}")
-            return
-        
+                    
         imagen = self.imagenes_procesadas[posicion]
         dot = Digraph(comment="LENGUAJES FORMALES Y DE PROGRAMACIÓN") 
-
-        dot.attr(label=f'"{imagen["nombre"].strip("'")}"') #Se agrega el nombre del grafo en un label
+    
+        dot.attr(dpi = '300') # Calidad de la imagen generada (grafo)
+        dot.attr(label=imagen["nombre"].strip("'") , labelloc="t", fontsize ="20") #Se agrega el nombre del grafo en un label
         
         #Con este bucle se agregan los nodos al grafo
         for nodo in imagen["nodos"]:
@@ -112,22 +103,18 @@ class Grafo:
         #Con este bucle se agregan las conexiones al grafo
         for conexion in imagen["conexiones"]:
             dot.edge(conexion[0], conexion[1])
-        
+            
         #Renderizamos el grafo
-        dot.render(f'Grafos/imgGrafo', format='png', view=True)
+        dot.render(self.PATH_IMAGEN, format='png', view=False)
         
-        #Muestra la imagen
-        img_path = 'Grafos/imgGrafo.png'
-        img = Image.open(img_path)
-        # Escalar la imagen al tamaño del label
-        img = img.resize((label.winfo_width(), label.winfo_height()))
-
-        # Convertir la imagen a formato compatible con tkinter
-        img = ImageTk.PhotoImage(img)
-
-        # Agregar la imagen al label
-        label.configure(image=img)
-        label.image = img  # Importante para evitar que la imagen se elimine por el recolector de basura
+        #Muestra la imagen en el label de la interfaz grafica
+        #################################################################################
+        imagen_grafo = Image.open(self.PATH_IMAGEN+'.png')
+        imagen_grafo = imagen_grafo.resize((label.winfo_width(), label.winfo_height())) # Redimensionar la imagen
+        imagen_grafo = ImageTk.PhotoImage(imagen_grafo)#parsear la imagen al formato del label
+        label.configure(image=imagen_grafo)#Se agrega la imagen parseada al label
+        label.image = imagen_grafo 
+        #################################################################################
         
             
 

@@ -1,16 +1,17 @@
 // LENGUAJES FORMALES Y DE PROGRAMACIÓN
 digraph {
-	label="\"El mejor grafo\""
-	nodo1 [label="Este es el nodo 1"]
-	nodo2 [label="AquÃ­ estÃ¡ el nodo 2"]
-	nodo3 [label="Este es el nodo 3"]
-	nodo4 [label="Texto del nodo 4"]
-	nodo5 [label="DescripciÃ³n del nodo 5"]
-	nodo6 [label="Contenido del nodo 6"]
-	nodo7 [label="Nodo nÃºmero 7"]
-	nodo8 [label="Texto para el nodo 8"]
-	nodo9 [label="InformaciÃ³n del nodo 9"]
-	nodo10 [label="DescripciÃ³n del nodo 10"]
+	dpi=300
+	fontsize=20 label="NODE GRAPH" labelloc=t
+	nodo1 [label=Node1]
+	nodo2 [label=Node2]
+	nodo3 [label=Node3]
+	nodo4 [label=Node4]
+	nodo5 [label=Node5]
+	nodo6 [label=Node6]
+	nodo7 [label=Node7]
+	nodo8 [label=Node8]
+	nodo9 [label=Node9]
+	nodo10 [label=Node10]
 	nodo1 -> nodo2
 	nodo1 -> nodo3
 	nodo2 -> nodo4

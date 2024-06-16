@@ -31,11 +31,6 @@ class Lexer:
         self.STRING = "String"
         self.SEPARADOR = "Separador"
         
-        
-        #verifica si existe mas de una imagen
-        self.haySeparador = False
-        
-       
     def reiniciar_listas(self):
         self.lista_imagenes = []
         self.tokens = []
@@ -149,20 +144,19 @@ class Lexer:
                         
                         #Reinicia la lista de tokens para la siguiente imagen
                         self.tokens = []
-                        
-                        self.haySeparador = True
                         lexema = ""
                         estado = 0 
+                        
                 else :
                     lexema += caracter  
                     self.errores.append(TokenError(self.ERROR_LEXICO, lexema, linea, columna_actual))
                     lexema = ""
                     estado = 0
-
+                    
             #Esto sirve para llevar un cotrol de la columna en la que se encuentra el lexema
             if not caracter.isspace() or estado == 3:
                 columna += 1
-        
+                
         #Si no se ha encontrado un separador se guarda la imagen con todos sus tokens en la lista de imagenes
         #Siempre se guardara la ultima imagen
         self.lista_imagenes.append(self.tokens)
@@ -192,7 +186,7 @@ conexiones ->[
 ... 
 """
 
-lexer = Lexer()
+"""lexer = Lexer()
 lexer.analizar(contenido_prueba)
 
 #lexer.imprimir_tokens_y_errores()
@@ -207,4 +201,4 @@ for imagen in lexer.lista_imagenes:
     
 print("\nErrores léxicos:")
 for error in lexer.errores:
-    print(error)
+    print(error)"""

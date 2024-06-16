@@ -1,6 +1,4 @@
-import sys
-import os
-from tkinter import filedialog, Tk, Label, Button, Canvas, ttk
+from tkinter import filedialog, Tk, Label, Button, Canvas, ttk, messagebox
 from PIL import Image, ImageTk
 from Backend.Lexer import Lexer
 from Backend.Grafo import Grafo  # Asegúrate de que Grafo esté correctamente importado desde tu proyecto
@@ -12,33 +10,43 @@ grafo = Grafo()
 
 # Métodos temporales
 def cargar_archivo():
-    global contenido_archivo
+    global contenido_archivo, btn_ejecutar_archivo
     
     archivo = filedialog.askopenfilename(filetypes=[("Archivos de código", "*.code")])
     if archivo:
-        with open(archivo, 'r') as file:
-            # Reiniciar variables
-            contenido_archivo = file.read()
+        with open(archivo, 'r', encoding= 'utf-8') as file:
+            btn_ejecutar_archivo.configure(state="normal") # Habilitar el botón de ejecutar
+            contenido_archivo = file.read() #Si ya habia contenido en el archivo se sobreescribe
             print("Contenido del archivo:", contenido_archivo)
-
+            
+def reiniciar_atributos():
+    global label_imagen, combobox
+    label_imagen.config(image="")
+    label_imagen.config(text="Imagen")
+    combobox.set("")
+    combobox['values'] = []
+    
 def ejecutar_archivo():
+    
+    reiniciar_atributos() # Reiniciar los atributos del archivo anterior si es que existen
     global contenido_archivo, cantidad_grafos
     grafo.lexer.analizar(contenido_archivo)
     
     # Si no encuentra errores se crean los grafos
     if len(grafo.lexer.errores) > 1:
-        print("Errores léxicos encontrados:")
-        for error in grafo.lexer.errores:
-            print(error)
-    else:
-        grafo.escanear_tokens(contenido_archivo)
-        cantidad_grafos = len(grafo.imagenes_procesadas)
+        messagebox.showerror("Errores léxicos encontrados","Corrija los errores léxicos encontrados en el archivo de entrada para poder crear los grafos.")
+        return
+    
+    grafo.escanear_tokens(contenido_archivo)
+    cantidad_grafos = len(grafo.imagenes_procesadas)
+      
+    print("Grafos creados correctamente")
+    messagebox.showinfo("Mensaje", f"Grafos creados correctamente.\nCantidad de grafos encontrados: {cantidad_grafos}")
+    print("Cantidad de grafos encontrados:", cantidad_grafos)
+    messagebox.showerror("Errores léxicos encontrados","Corrija los errores léxicos encontrados en el archivo de entrada para poder crear los grafos.")
         
-        print("Grafos creados correctamente")
-        print("Cantidad de grafos encontrados:", cantidad_grafos)
-        
-        # Actualizar el combobox con los nombres de los grafos
-        actualizar_combobox()
+    # Actualizar el combobox con los nombres de los grafos
+    actualizar_combobox()
 
 def actualizar_combobox():
     global grafo
@@ -57,7 +65,7 @@ def mostrar_grafo(event):
     print("Mostrando grafo:", seleccion)
     grafo.mostrar_grafo(seleccion, label_imagen)
     
-def reporte_T():
+def reporte_T(tipo):
     ruta_reporte = filedialog.asksaveasfilename(defaultextension=".html", filetypes=[("Archivos HTML", "*.html")])
     if ruta_reporte:
         try:
@@ -71,8 +79,8 @@ def reporte_T():
             print("Error al guardar el reporte:", e)
 
 # Crear la ventana principal
-ancho_ventana = 700
-alto_ventana = 600
+ancho_ventana = 860
+alto_ventana = 760
 
 ventana_principal = Tk()
 ventana_principal.geometry(f"{ancho_ventana}x{alto_ventana}")
@@ -89,10 +97,10 @@ canva.create_image(0, 0, image=fondo, anchor="nw")
 
 # Para cargar las imágenes
 label_imagen = Label(ventana_principal, text="Imagen", bg="lightgrey", anchor="center")
-label_imagen.place(x=80, y=180, width=400, height=380)
+label_imagen.place(x=40, y=160, width=520, height=520)
 
 combobox = ttk.Combobox(ventana_principal)
-combobox.place(x=500, y=180, width=150)
+combobox.place(x=600, y=160, width=150)
 combobox.bind("<<ComboboxSelected>>", mostrar_grafo)
 
 # ARCHIVOS
@@ -104,7 +112,7 @@ btn_cargar_archivo = Button(ventana_principal, text="Cargar Archivo", command=ca
 btn_cargar_archivo.place(x=20, y=60)
 
 # Para ejecutar el archivo
-btn_ejecutar_archivo = Button(ventana_principal, text="Ejecutar Archivo", command=ejecutar_archivo)
+btn_ejecutar_archivo = Button(ventana_principal, text="Ejecutar Archivo", command=ejecutar_archivo, state="disabled")
 btn_ejecutar_archivo.place(x=20, y=100)
 
 # REPORTES 
