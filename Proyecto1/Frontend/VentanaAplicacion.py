@@ -1,40 +1,40 @@
-#clase donde se crea la interfaz grafica de la aplicacion
-import sys
-import os
-
-# Añadir el directorio raíz del proyecto al sys.path
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from Backend.Reportes import Reporte
-from Backend.Lexer import Lexer
-
-contenido_prueba = """
-nombre -> 'titulo';
-nodos -> [
-'nombre_nodo1': 'texto_nodo1',
-'nombre_nodo2': 'texto nodo2',
-'nombre_nodo3': 'texto_nodo3'
-];
-conexiones ->[
-{'nombre_nodo1' > 'nombre_nodo2'},
-{'nombre_nodo3' > 'nombre_nodo2'}
-]
-"""
-
 #Clase en donde se creara todo relacionado a la gui
 from tkinter import filedialog, Tk, Label, Button, Text, Canvas, ttk
 from PIL import Image, ImageTk
 
+from Backend.Reportes import Reporte
+from Backend.Lexer import Lexer
+from Backend.Grafo import Grafo
+
+
+#Variables globales
+contenido_archivo = ""
+Lexer = Lexer()
+Grafo = Grafo()
+
 #METODOS TEMPORALES
 def cargar_archivo():
+    global contenido_archivo
+    
     archivo = filedialog.askopenfilename(filetypes=[("Archivos de código", "*.code")])
     if archivo:
         with open(archivo, 'r') as file:
-            contenido = file.read()
-            print("Contenido del archivo:", contenido)
+            contenido_archivo = file.read()
+            print("Contenido del archivo:", contenido_archivo)
 
 def ejecutar_archivo():
-    print("Ejecutando Archivo")
+    global Lexer, contenido_archivo
+    Lexer.analizar(contenido_archivo)
     
+    #si no encuentra errores se crean los grafos
+    if Lexer.errores>1:
+        print("Errores léxicos encontrados:")
+        for error in Lexer.errores:
+            print(error)
+    else :
+        Grafo.escanear_tokens(contenido_archivo)
+        print("Grafos creados correctamente")
+        
 #Este metodo permite guardar un reporte 
 def reporte_T():
     ruta_reporte = filedialog.asksaveasfilename(defaultextension=".html", filetypes=[("Archivos HTML", "*.html")])
@@ -44,12 +44,8 @@ def reporte_T():
         try:
             # Crear el archivo con el nombre especificado en la ubicación seleccionada
             with open(ruta_reporte, 'w') as file:
-                lex = Lexer(lex.contenido_prueba)
-                lex.analizar()
-                gen = Reporte(lex.tokens, "Tokens")
                 
-                html = gen.obtenerReporte()
-                file.write(html)
+                #file.write(html)
       
                 #Agregar el contenido del reporte seleccionado
                 

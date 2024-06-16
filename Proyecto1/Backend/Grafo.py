@@ -29,7 +29,7 @@ class Grafo:
             })
         
         self.imagenes_procesadas = imagenes_procesadas
-    
+        
     def extraer_nombre(self, tokens):
         return tokens[2].lexema
     
@@ -55,7 +55,7 @@ class Grafo:
             else:
                 i += 1
         return NODOS
-
+    
     #con este metodo se extraen todas las conexiones existentes en el archivo de entrada
     def extraer_conexiones(self, tokens):
         CONEXIONES = []
@@ -83,20 +83,16 @@ class Grafo:
                       
         return CONEXIONES
 
-
     #En base al numero de opcion seleccionada en el combobox se mostrara el grafo correspondiente
     def mostrar_grafo(self, posicion):
         if posicion < 0 or posicion >= len(self.imagenes_procesadas):
             print(f"No hay imagen en la posición {posicion}")
             return
-            
+        
         imagen = self.imagenes_procesadas[posicion]
-        dot = Digraph(comment="Grafo") 
-        dot.attr(rankdir='LR')  # Establece la dirección de las conexiones
-        
-        label=imagen["nombre"]
-        
-        dot.attr(label=f'"{imagen["nombre"]}"') #Se agrega el nombre del grafo en un label
+        dot = Digraph(comment="LENGUAJES FORMALES Y DE PROGRAMACIÓN") 
+
+        dot.attr(label=f'"{imagen["nombre"].strip("'")}"') #Se agrega el nombre del grafo en un label
         
         #Con este bucle se agregan los nodos al grafo
         for nodo in imagen["nodos"]:
@@ -106,12 +102,9 @@ class Grafo:
         for conexion in imagen["conexiones"]:
             dot.edge(conexion[0], conexion[1])
         
+        #Renderizamos el grafo
+        dot.render(f'Grafos/imgGrafo', format='png', view=True)
         
-        nombre_imagen = imagen["nombre"]
-        # Renderizamos el grafo
-        dot.render(f'Grafos/Grafo', format='png', view=True)
-                   
-
 # Ejemplo de uso
 contenido_prueba = """
 nombre -> 'LFP1';
@@ -124,9 +117,10 @@ conexiones ->[
 {'nombre_nodo1' > 'nombre_nodo2'},
 {'nombre_nodo3' > 'nombre_nodo2'}
 ]
+
 ...
 
-nombre -> 'Ejemplo de Grafo';
+nombre -> 'El mejor grafo';
 nodos -> [
   'nodo1': 'Este es el nodo 1',
   'nodo2': 'Aquí está el nodo 2',
@@ -149,9 +143,9 @@ conexiones -> [
   {'nodo5' > 'nodo6'},
   {'nodo6' > 'nodo7'},
   {'nodo7' > 'nodo8'},
-  {'nodo8' > 'nodo9'}
+  {'nodo8' > 'nodo9'},
+  {'nodo9' > 'nodo10'}
 ]
-
 """
 
 grafo = Grafo()
@@ -168,5 +162,6 @@ for idx, imagen in enumerate(grafo.imagenes_procesadas):
         print(list(conexion))  # Imprime cada conexión como una lista 
     print()
     
-grafo.mostrar_grafo(0)
+
+grafo.mostrar_grafo(1)
 
