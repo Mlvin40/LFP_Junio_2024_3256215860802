@@ -30,21 +30,21 @@ def ejecutar_archivo():
     
     reiniciar_atributos() # Reiniciar los atributos del archivo anterior si es que existen
     global contenido_archivo, cantidad_grafos
+    grafo.lexer.reiniciar_listas() #Reinicia los errores del archivo anterior
     grafo.lexer.analizar(contenido_archivo)
     
     # Si no encuentra errores se crean los grafos
-    if len(grafo.lexer.errores) > 1:
+    if len(grafo.lexer.errores) > 0:
         messagebox.showerror("Errores léxicos encontrados","Corrija los errores léxicos encontrados en el archivo de entrada para poder crear los grafos.")
         return
     
     grafo.escanear_tokens(contenido_archivo)
     cantidad_grafos = len(grafo.imagenes_procesadas)
-      
     print("Grafos creados correctamente")
+
     messagebox.showinfo("Mensaje", f"Grafos creados correctamente.\nCantidad de grafos encontrados: {cantidad_grafos}")
     print("Cantidad de grafos encontrados:", cantidad_grafos)
-    messagebox.showerror("Errores léxicos encontrados","Corrija los errores léxicos encontrados en el archivo de entrada para poder crear los grafos.")
-        
+    
     # Actualizar el combobox con los nombres de los grafos
     actualizar_combobox()
 
