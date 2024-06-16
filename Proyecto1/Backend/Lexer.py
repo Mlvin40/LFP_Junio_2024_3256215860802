@@ -17,11 +17,10 @@ class Lexer:
         self.entrada = ""
         self.keywords = {'nombre', 'nodos', 'conexiones'}
         
-        self.lista_imagenes = []
+        self.lista_imagenes = [] # Lista para almacenar las imagenes en tokens
         
         #Agrega todas los lexemas de la imagen
         self.tokens = []  # Lista para almacenar tokens válidos
-        
         self.errores = []  # Lista para almacenar errores léxicos
         
         self.ERROR_LEXICO ="Identificador Desconocido"
@@ -31,7 +30,7 @@ class Lexer:
         self.STRING = "String"
         self.SEPARADOR = "Separador"
         
-    def reiniciar_listas(self):
+    def reiniciar_listas(self): # Metodo para reiniciar las listas de tokens y errores cuando se analiza un nuevo archivo
         self.lista_imagenes = []
         self.tokens = []
         self.errores = []
@@ -161,44 +160,3 @@ class Lexer:
         #Siempre se guardara la ultima imagen
         self.lista_imagenes.append(self.tokens)
         
-        
-    def imprimir_tokens_y_errores(self):
-        print("Tokens válidos:")
-        for token in self.tokens:
-            print(token)
-        print("\nErrores léxicos:")
-        for error in self.errores:
-            print(error)
-                     
-# Ejemplo de uso
-contenido_prueba = """
-nombre -> 'titulo';
-nodos -> [
-'nombre_nodo1': 'texto_nodo1',
-'nombre_nodo2': 'texto nodo2',
-'nombre_nodo3': 'texto_nodo3'
-];
-conexiones ->[
-{'nombre_nodo1' > 'nombre_nodo2'},
-{'nombre_nodo3' > 'nombre_nodo2'}
-]
-
-... 
-"""
-
-"""lexer = Lexer()
-lexer.analizar(contenido_prueba)
-
-#lexer.imprimir_tokens_y_errores()
-
-print("Imagenes generadas",len(lexer.lista_imagenes))
-
-for imagen in lexer.lista_imagenes:
-    print("Imagen:")
-    for token in imagen:
-        print(token)
-    print("\n")
-    
-print("\nErrores léxicos:")
-for error in lexer.errores:
-    print(error)"""

@@ -1,7 +1,8 @@
 from tkinter import filedialog, Tk, Label, Button, Canvas, ttk, messagebox
 from PIL import Image, ImageTk
 from Backend.Lexer import Lexer
-from Backend.Grafo import Grafo  # Asegúrate de que Grafo esté correctamente importado desde tu proyecto
+from Backend.Grafo import Grafo
+from Backend.Reportes import Reporte
 
 # Variables globales
 contenido_archivo = ""
@@ -17,7 +18,7 @@ def cargar_archivo():
         with open(archivo, 'r', encoding= 'utf-8') as file:
             btn_ejecutar_archivo.configure(state="normal") # Habilitar el botón de ejecutar
             contenido_archivo = file.read() #Si ya habia contenido en el archivo se sobreescribe
-            print("Contenido del archivo:", contenido_archivo)
+            messagebox.showinfo("Mensaje", "Archivo cargado correctamente.")
             
 def reiniciar_atributos():
     global label_imagen, combobox
@@ -27,7 +28,6 @@ def reiniciar_atributos():
     combobox['values'] = []
     
 def ejecutar_archivo():
-    
     reiniciar_atributos() # Reiniciar los atributos del archivo anterior si es que existen
     global contenido_archivo, cantidad_grafos
     grafo.lexer.reiniciar_listas() #Reinicia los errores del archivo anterior
@@ -35,13 +35,11 @@ def ejecutar_archivo():
     
     # Si no encuentra errores se crean los grafos
     if len(grafo.lexer.errores) > 0:
-        messagebox.showerror("Errores léxicos encontrados","Corrija los errores léxicos encontrados en el archivo de entrada para poder crear los grafos.")
+        messagebox.showerror("Errores léxicos encontrados","Corrija los errores léxicos en el archivo de entrada para poder crear los grafos. \nCantidad de errores encontrados: "+str(len(grafo.lexer.errores)))
         return
     
     grafo.escanear_tokens(contenido_archivo)
     cantidad_grafos = len(grafo.imagenes_procesadas)
-    print("Grafos creados correctamente")
-
     messagebox.showinfo("Mensaje", f"Grafos creados correctamente.\nCantidad de grafos encontrados: {cantidad_grafos}")
     print("Cantidad de grafos encontrados:", cantidad_grafos)
     
@@ -58,7 +56,7 @@ def actualizar_combobox():
     
     #se actualiza el combobox con los nombres de los grafos
     combobox['values'] = nombres_grafos
-
+    
 def mostrar_grafo(event):
     global grafo, label_imagen
     seleccion = combobox.current()
@@ -66,15 +64,25 @@ def mostrar_grafo(event):
     grafo.mostrar_grafo(seleccion, label_imagen)
     
 def reporte_T(tipo):
+    #Tipo 1 = Reporte de Tokens Tipo 2 = Reporte de Errores
     ruta_reporte = filedialog.asksaveasfilename(defaultextension=".html", filetypes=[("Archivos HTML", "*.html")])
     if ruta_reporte:
         try:
             with open(ruta_reporte, 'w') as file:
-                lexer.analizar(contenido_archivo)
-                gen = Reporte(lexer.tokens, "Tokens")
+                if tipo == 1:
+                    Lista = []
+                    for imagen in grafo.lexer.lista_imagenes:
+                        for token in imagen:
+                            Lista.append(token)                 
+                    gen = Reporte(Lista, "Tokens")
+                else:
+                    gen = Reporte(grafo.lexer.errores, "Errores")
+                    
                 html = gen.obtenerReporte()
                 file.write(html)
                 print("Reporte guardado en:", ruta_reporte)
+                messagebox.showinfo("Mensaje", f"Reporte creado exitosamente. \nReporte guardado en: {ruta_reporte}")
+                
         except Exception as e:
             print("Error al guardar el reporte:", e)
 
@@ -120,11 +128,11 @@ lbl_reportes = Label(ventana_principal, text="REPORTES")
 lbl_reportes.place(x=300, y=20)
 
 # Para mostrar reporte de tokens
-btn_reporte_token = Button(ventana_principal, text="Reporte de Tokens", command=reporte_T)
+btn_reporte_token = Button(ventana_principal, text="Reporte de Tokens", command= lambda:reporte_T(1))
 btn_reporte_token.place(x=300, y=60)
 
 # Para reporte de errores
-bnt_reporte_errores = Button(ventana_principal, text="Reporte de Errores", command=reporte_T)
+bnt_reporte_errores = Button(ventana_principal, text="Reporte de Errores", command= lambda:reporte_T(2))
 bnt_reporte_errores.place(x=300, y=100)
 
 # Mostrar la ventana
