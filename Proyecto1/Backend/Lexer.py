@@ -35,6 +35,11 @@ class Lexer:
         #verifica si existe mas de una imagen
         self.haySeparador = False
         
+       
+    def reiniciar_listas(self):
+        self.lista_imagenes = []
+        self.tokens = []
+        self.errores = []
         
     def isCaracterValido(self, caracter):
         return caracter in [';', '[', ']', ':', ',', '{', '}', '>']

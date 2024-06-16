@@ -4,6 +4,9 @@ import os
 # Añadir el directorio raíz del proyecto al sys.path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from tkinter import PhotoImage, Label
+from PIL import Image, ImageTk
+
 from Backend.Lexer import Lexer
 from graphviz import Digraph
 
@@ -15,6 +18,14 @@ class Grafo:
 
     # Este metodo se encarga de devolver una lista de todas las imagenes encontradas en el archivo de entrada
     def escanear_tokens(self, contenido):
+        
+        ##################################################################
+        """esto se hace para limpiar la lista de imagenes procesadas
+        en caso de que se vuelva a analizar un nuevo archivo de entrada"""
+        self.imagenes_procesadas = []
+        self.lexer.reiniciar_listas()
+        ##################################################################
+        
         self.lexer.analizar(contenido)
         imagenes_procesadas = []
 
@@ -84,7 +95,7 @@ class Grafo:
         return CONEXIONES
 
     #En base al numero de opcion seleccionada en el combobox se mostrara el grafo correspondiente
-    def mostrar_grafo(self, posicion):
+    def mostrar_grafo(self, posicion, label):
         if posicion < 0 or posicion >= len(self.imagenes_procesadas):
             print(f"No hay imagen en la posición {posicion}")
             return
@@ -105,63 +116,18 @@ class Grafo:
         #Renderizamos el grafo
         dot.render(f'Grafos/imgGrafo', format='png', view=True)
         
-# Ejemplo de uso
-contenido_prueba = """
-nombre -> 'LFP1';
-nodos -> [
-'nombre_nodo1': 'texto_nodo1',
-'nombre_nodo2': 'texto nodo2',
-'nombre_nodo3': 'texto_nodo3'
-];
-conexiones ->[
-{'nombre_nodo1' > 'nombre_nodo2'},
-{'nombre_nodo3' > 'nombre_nodo2'}
-]
+        #Muestra la imagen
+        img_path = 'Grafos/imgGrafo.png'
+        img = Image.open(img_path)
+        # Escalar la imagen al tamaño del label
+        img = img.resize((label.winfo_width(), label.winfo_height()))
 
-...
+        # Convertir la imagen a formato compatible con tkinter
+        img = ImageTk.PhotoImage(img)
 
-nombre -> 'El mejor grafo';
-nodos -> [
-  'nodo1': 'Este es el nodo 1',
-  'nodo2': 'Aquí está el nodo 2',
-  'nodo3': 'Este es el nodo 3',
-  'nodo4': 'Texto del nodo 4',
-  'nodo5': 'Descripción del nodo 5',
-  'nodo6': 'Contenido del nodo 6',
-  'nodo7': 'Nodo número 7',
-  'nodo8': 'Texto para el nodo 8',
-  'nodo9': 'Información del nodo 9',
-  'nodo10': 'Descripción del nodo 10'
-];
-conexiones -> [
-  {'nodo1' > 'nodo2'},
-  {'nodo1' > 'nodo3'},
-  {'nodo2' > 'nodo4'},
-  {'nodo3' > 'nodo4'},
-  {'nodo3' > 'nodo5'},
-  {'nodo4' > 'nodo6'},
-  {'nodo5' > 'nodo6'},
-  {'nodo6' > 'nodo7'},
-  {'nodo7' > 'nodo8'},
-  {'nodo8' > 'nodo9'},
-  {'nodo9' > 'nodo10'}
-]
-"""
-
-grafo = Grafo()
-grafo.escanear_tokens(contenido_prueba)
-
-for idx, imagen in enumerate(grafo.imagenes_procesadas):
-    print(f"Imagen {idx + 1}:")
-    print("Nombre:", imagen["nombre"])
-    print("Nodos:")
-    for nodo in imagen["nodos"]:
-        print(list(nodo))  # Imprime cada nodo como una lista 
-    print("Conexiones:")
-    for conexion in imagen["conexiones"]:
-        print(list(conexion))  # Imprime cada conexión como una lista 
-    print()
-    
-
-grafo.mostrar_grafo(1)
+        # Agregar la imagen al label
+        label.configure(image=img)
+        label.image = img  # Importante para evitar que la imagen se elimine por el recolector de basura
+        
+            
 
