@@ -19,7 +19,9 @@ class Lexer:
         
         self.lista_imagenes = []
         
+        #Agrega todas los lexemas de la imagen
         self.tokens = []  # Lista para almacenar tokens válidos
+        
         self.errores = []  # Lista para almacenar errores léxicos
         
         self.ERROR_LEXICO ="Identificador Desconocido"
@@ -43,7 +45,6 @@ class Lexer:
     def analizar(self, entrada):
         #guarda la entrada de texto en la variable entrada para poder analizarla
         self.entrada = entrada
-        
         
         linea = 1
         columna = 1
@@ -161,7 +162,7 @@ class Lexer:
         #Siempre se guardara la ultima imagen
         self.lista_imagenes.append(self.tokens)
         
-                
+        
     def imprimir_tokens_y_errores(self):
         print("Tokens válidos:")
         for token in self.tokens:
@@ -169,7 +170,7 @@ class Lexer:
         print("\nErrores léxicos:")
         for error in self.errores:
             print(error)
-            
+                     
 # Ejemplo de uso
 contenido_prueba = """
 nombre -> 'titulo';
@@ -183,18 +184,12 @@ conexiones ->[
 {'nombre_nodo3' > 'nombre_nodo2'}
 ]
 
-...
-
-'Prueba'
-...
-
-...
-
-nodos
-
+... 
 """
+
 lexer = Lexer()
 lexer.analizar(contenido_prueba)
+
 #lexer.imprimir_tokens_y_errores()
 
 print("Imagenes generadas",len(lexer.lista_imagenes))
