@@ -9,7 +9,6 @@ contenido_archivo = ""
 cantidad_grafos = 0
 grafo = Grafo()
 
-# Métodos temporales
 def cargar_archivo():
     global contenido_archivo, btn_ejecutar_archivo
     
@@ -85,7 +84,7 @@ def reporte_T(tipo):
                 
         except Exception as e:
             print("Error al guardar el reporte:", e)
-
+            
 # Crear la ventana principal
 ancho_ventana = 860
 alto_ventana = 760

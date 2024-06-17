@@ -1,24 +1,18 @@
 // LENGUAJES FORMALES Y DE PROGRAMACIÓN
 digraph {
 	dpi=300
-	fontsize=20 label="NODE GRAPH" labelloc=t
-	nodo1 [label=Node1]
-	nodo2 [label=Node2]
-	nodo3 [label=Node3]
-	nodo4 [label=Node4]
-	nodo5 [label=Node5]
-	nodo6 [label=Node6]
-	nodo7 [label=Node7]
-	nodo8 [label=Node8]
-	nodo9 [label=Node9]
+	fontsize=20 label="Grafo 7" labelloc=t
+	nodo1 [label=Inicio]
+	nodo2 [label="Evaluación"]
+	nodo3 [label="Decisión 1"]
+	nodo4 [label="Acción 1"]
+	nodo5 [label="Decisión 2"]
+	nodo6 [label="Acción 2"]
+	nodo7 [label=Fin]
 	nodo1 -> nodo2
-	nodo1 -> nodo3
+	nodo2 -> nodo3
 	nodo2 -> nodo4
-	nodo3 -> nodo4
 	nodo3 -> nodo5
-	nodo4 -> nodo6
-	nodo5 -> nodo6
-	nodo6 -> nodo7
-	nodo7 -> nodo8
-	nodo8 -> nodo9
+	nodo3 -> nodo6
+	nodo5 -> nodo7
 }

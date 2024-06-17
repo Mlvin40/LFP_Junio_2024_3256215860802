@@ -1,17 +1,9 @@
-import sys
-import os
-
-# Añadir el directorio raíz del proyecto al sys.path
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
 from Backend.Token import Token
 from Backend.Error import TokenError
 from Backend.Reportes import Reporte
 
 # Clase para analizar el código fuente y generar tokens
-#######################
-
-
+############################################################################################################
 class Lexer:
     def __init__(self) -> None:
         self.entrada = ""

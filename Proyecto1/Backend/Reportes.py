@@ -3,6 +3,7 @@ class Reporte:
         self.entrada = entrada
         self.tipo = tipo
         
+    #Metodo que genera el reporte en formato HTML 
     def obtenerReporte(self):
         contenido = ""
         for token in self.entrada:
