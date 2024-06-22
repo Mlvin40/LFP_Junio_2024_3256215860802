@@ -1,0 +1,72 @@
+**********************LENGUAJE**********************
+
+Array variable = new Array [15, 564, 78];
+variable.sort(asc=FALSE);
+variable.save("abc");
+
+****************************************************
+
+*********************GRAMATICA*********************
+
+-----Terminales----- 
+tk_palabraArray 
+tk_id
+tk_igual
+tk_new
+tk_corcheteApertura 
+tk_coma
+tk_corcheteCierre
+tk_puntoComa
+tk_numero
+tk_punto
+tk_sort
+tk_parentesisApertura
+tk_asc
+tk_true
+tk_false
+tk_parentesisCierre
+tk_save
+tk_string
+
+
+-----Producciones-----
+
+<inicio> ::= <instrucciones>
+
+<instrucciones> ::= <instruccion> <instrucciones>
+                  | epsilon
+
+<instruccion> ::= <declaracion>
+                | <instruccionID>
+
+<instruccionID> ::= tk_id tk_punto <accionArreglo>
+
+<accionArreglo> ::= <ordenamiento>
+                  | <guardar>
+
+<declaracion> ::= tk_palabraArray tk_id tk_igual tk_new tk_palabraArray tk_corcheteApertura <listaElementos> tk_corcheteCierre tk_puntoComa
+
+<listaElementos> ::= <elemento> tk_coma <listaElementos>
+                   | <elemento>
+                   | epsilon
+
+<elemento> ::= tk_numero
+
+<ordenamiento> ::= tk_sort tk_parentesisApertura tk_asc tk_igual tk_true
+                 | tk_sort tk_parentesisApertura tk_asc tk_igual tk_false tk_parentesisCierre tk_puntoComa
+
+<guardar> ::= tk_save tk_parentesisApertura tk_string tk_parentesisCierre tk_puntoComa
+
+
+-----No_Terminales---- 
+
+<inicio>
+<instrucciones>
+<instruccion>
+<instruccionID>
+<accionArreglo>
+<declaracion>
+<listaElementos>
+<elemento>
+<ordenamiento>
+<guardar>
