@@ -8,6 +8,8 @@ from Backend.TokenError import TokenError
 
 class Lexer:
     def __init__(self):
+        
+        # Listas que almacena los tokens validos y los errores lexicos
         self.tokens = []
         self.token_errors = []
         
@@ -68,7 +70,7 @@ class Lexer:
                 elif caracter == '"':
                     lexema += caracter
                     estado = 4
-                
+                          
                 elif caracter in self.simbolos:
                     lexema += caracter
                     self.tokens.append(Token(self.SIMBOLO, lexema, linea, columnaActual))
@@ -80,7 +82,7 @@ class Lexer:
                         columna = 1
                     columna += 1
                     
-                elif caracter.isdigit or caracter == '-':
+                elif caracter.isdigit() or caracter == '-':
                     lexema += caracter
                     estado = 9
                            
@@ -98,6 +100,7 @@ class Lexer:
                     estado = 7
                     
                 else:
+                    lexema += caracter
                     self.token_errors.append(TokenError(self.ERROR_LEXICO, lexema, linea, columnaActual))
                     lexema = ""
                     estado = 0 
@@ -136,29 +139,41 @@ class Lexer:
             ################################## Verificar si se guarda el ultimo lexema ##################################
             # Estado en donde se analiza las palabras claves
             elif estado == 2:
-                if caracter.isalnum():
+                if caracter.isalnum() or caracter == '_':
                     # Si el caracter es alfanumerico o guion bajo se agrega al lexema
-                    lexema += caracter or caracter == '_'
-                else:
+                    lexema += caracter 
+                                             
+                elif caracter.isspace() or caracter in self.operators or caracter in self.simbolos:
                     if lexema in self.keywords:
                         self.tokens.append(Token(self.PALABRA_CLAVE, lexema, linea, columnaActual))
                     else:
                         self.tokens.append(Token(self.IDENTIFICADOR, lexema, linea, columnaActual))
-                    
+                         
                     # Verificar si el caracter siguiente es un operador o un simbolo cuando van en texto seguido
                     self.verificarSeguido(caracter, linea, columnaActual)
-                        
                     lexema = ""
                     estado = 0
-                
+
+                else:
+                    lexema += caracter
+                    self.token_errors.append(TokenError(self.ERROR_LEXICO, lexema, linea, columnaActual))
+                    lexema = ""
+                    estado = 0
+                           
             # Estado en donde se analiza las cadenas de texto
-            
             elif estado == 4:
                 if caracter == '"':
                     lexema += caracter
                     self.tokens.append(Token(self.CADENA, lexema, linea, columnaActual))
                     lexema = ""
                     estado = 0
+               
+                elif caracter == '\n':  # Si se encuentra un salto de linea en una cadena de texto, se considera un error léxico
+                    lexema += caracter
+                    self.token_errors.append(TokenError(self.ERROR_LEXICO, lexema, linea, columnaActual))
+                    lexema = ""
+                    estado = 0
+        
                 else:
                     lexema += caracter
             
@@ -180,23 +195,23 @@ class Lexer:
                     self.token_errors.append(TokenError(self.ERROR_LEXICO, lexema, linea, columnaActual))
                     lexema = ""
                     estado = 0            
-                    
+                        
             # Incrementar el contador de columnas
             columna += 1
             
-
+    ####### FIN DEL ANALISIS LEXICO #######
+                    
+                    
+# Prueba del analizador léxico       
+     
 Lexer = Lexer()
 contenido = """
 // Editor de código fuente
-
-// Comentario de una línea 
-
-#
-#
+// Comentario de una línea
 
 /*
 Comentario
-multilínea 
+multilínea
 */
 
 Array miArray = new Array [ -15, 80.12, 68, 55, 48, "Hola" ];
@@ -213,17 +228,7 @@ print("\nErrores léxicos:")
 
 for error in Lexer.token_errors:
     print(error)
-            
-            
-            
-            
                 
-            
-                    
-                
-                
-                
-                    
                 
                     
         
