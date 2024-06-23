@@ -57,7 +57,6 @@ tk_string
 
 <guardar> ::= tk_save tk_parentesisApertura tk_string tk_parentesisCierre tk_puntoComa
 
-
 -----No_Terminales---- 
 
 <inicio>
