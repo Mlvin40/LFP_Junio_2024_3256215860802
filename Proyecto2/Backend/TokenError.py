@@ -8,3 +8,4 @@ class TokenError:
         
     def __str__(self):
         return f'Error: {self.error}, LEXEMA: {self.lexema}, LINEA: {self.linea}, COLUMNA: {self.columna}'
+    

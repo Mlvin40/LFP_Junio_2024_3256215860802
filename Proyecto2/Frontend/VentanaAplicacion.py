@@ -11,13 +11,9 @@ def cargar_archivo():
             btn_ejecutar_archivo.configure(state="normal") # Habilitar el botón de ejecutar
             contenido_archivo = file.read() #Si ya habia contenido en el archivo se sobreescribe
             messagebox.showinfo("Mensaje", "Archivo cargado correctamente.")
-            
+    
 def reiniciar_atributos():
-    global label_imagen, combobox
-    label_imagen.config(image="")
-    label_imagen.config(text="Imagen")
-    combobox.set("")
-    combobox['values'] = []
+    print("Reiniciando atributos")
 
 def ejecutar_archivo():
     print("Ejecutando archivo")
@@ -26,9 +22,8 @@ def reporte_T(tipo):
     print("Generando reporte")
   
 def mostrar(event):
-    print("Mostrando ")
+    print("Mostrando")
     
-
 # Crear la ventana principal
 ancho_ventana = 860
 alto_ventana = 740
@@ -78,4 +73,3 @@ bnt_reporte_errores.place(x=300, y=100)
 
 # Mostrar la ventana
 ventana_principal.mainloop()
-

@@ -15,3 +15,22 @@ Array miArray = new Array [ 15, 80, 68, 55, 48 ];
 miArray.sort(asc=FALSE);
 
 miArray.save("ruta/del/archivo/csv");
+
+
+
+contenido2 = """
+Array Prueb_a = new Array [ 15, 80, 68, 55, 48.13, -12.25 ];
+Array Prueba_2 = new Array [ "hola", "mundo", "como", "estas" ];
+
+miArray.save("ruta/del/archivo/csv");
+
+miArray2.sort(asc=FALSE);
+miArray2.save("ruta/del/archivo/csv");
+
+Array Prueba3 = new Array [ 15, 80, 68, 55, 48.13, -12.25 ];
+miArray3.sort(asc=TRUE);
+miArray3.save("ruta/del/archivo/csv");
+
+Array Prueba4 = new Array [ "hola", "mundo", "como", "estas" ];
+miArray4.save("ruta/del/archivo/csv");
+"""

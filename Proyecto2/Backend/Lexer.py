@@ -25,14 +25,13 @@ class Lexer:
         # Constantes para los tipos de tokens
         self.PALABRA_CLAVE = "PalabraReservada"
         self.IDENTIFICADOR = "Identificador"
-        self.ERROR_LEXICO = "Error lexico"
+        self.ERROR_LEXICO = "Error Lexico"
         self.CADENA = "Cadena"
         self.NUMERO = "Numero"
         self.SIMBOLO = "Simbolo"
         self.OPERADOR = "Operador"
         self.COMENTARIO = "Comentario"
         
-    
     # Metodo para verificar si el caracter siguiente es un operador o un simbolo
     def verificarSeguido(self, caracter, linea ,columnaActual):
         if caracter in self.operators:
@@ -41,7 +40,11 @@ class Lexer:
         if caracter in self.simbolos:
             self.tokens.append(Token(self.SIMBOLO, caracter, linea, columnaActual))
             
+    def reinicar_listas(self):
+        self.tokens = []
+        self.token_errors = [] 
     
+    # Metodo para analizar el texto y generar los tokens
     def analizar(self, texto):
         linea = 1 
         columna = 1
@@ -136,8 +139,8 @@ class Lexer:
                     lexema = ""
                     estado = 0
                     
-            ################################## Verificar si se guarda el ultimo lexema ##################################
-            # Estado en donde se analiza las palabras claves
+           
+            # Estado en donde se analiza las palabras claves o identificadores
             elif estado == 2:
                 if caracter.isalnum() or caracter == '_':
                     # Si el caracter es alfanumerico o guion bajo se agrega al lexema
@@ -172,11 +175,13 @@ class Lexer:
                     lexema += caracter
                     self.token_errors.append(TokenError(self.ERROR_LEXICO, lexema, linea, columnaActual))
                     lexema = ""
+                    linea += 1
+                    columna = 1
                     estado = 0
         
                 else:
                     lexema += caracter
-            
+                    
             elif estado == 9:
                 # Estado para números (enteros o decimales)
                 if caracter.isdigit() or caracter == '.':
@@ -197,38 +202,17 @@ class Lexer:
                     estado = 0            
                         
             # Incrementar el contador de columnas
-            columna += 1
-            
+            if not caracter.isspace() or estado == 4:
+                columna += 1
+
     ####### FIN DEL ANALISIS LEXICO #######
-                    
-                    
-# Prueba del analizador léxico       
-     
-Lexer = Lexer()
 contenido = """
-// Editor de código fuente
-// Comentario de una línea
-
-/*
-Comentario
-multilínea
-*/
-
-Array miArray = new Array [ -15, 80.12, 68, 55, 48, "Hola" ];
+Array Prueba = new Array [ 15, 80, 68, 55, 48.13, -12.25 ];
 miArray.sort(asc=FALSE);
-
 miArray.save("ruta/del/archivo/csv");
 """
 
+Lexer = Lexer()
 Lexer.analizar(contenido)
 for token in Lexer.tokens:
     print(token)
-    
-print("\nErrores léxicos:")
-
-for error in Lexer.token_errors:
-    print(error)
-                
-                
-                    
-        
