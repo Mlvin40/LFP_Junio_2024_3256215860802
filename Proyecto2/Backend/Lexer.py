@@ -201,18 +201,8 @@ class Lexer:
                     lexema = ""
                     estado = 0            
                         
-            # Incrementar el contador de columnas
+            # Incrementar el contador de columnas si el caracter no es un espacio en blanco o si no se encuentra en un comentario
             if not caracter.isspace() or estado == 4:
                 columna += 1
-
+                
     ####### FIN DEL ANALISIS LEXICO #######
-contenido = """
-Array Prueba = new Array [ 15, 80, 68, 55, 48.13, -12.25 ];
-miArray.sort(asc=FALSE);
-miArray.save("ruta/del/archivo/csv");
-"""
-
-Lexer = Lexer()
-Lexer.analizar(contenido)
-for token in Lexer.tokens:
-    print(token)

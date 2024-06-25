@@ -17,6 +17,12 @@ miArray.sort(asc=FALSE);
 miArray.save("ruta/del/archivo/csv");
 
 
+contenido = """
+Array Prueba = new Array [ 15, 80, 68, 55, 48.13, -12.25 ];
+miArray.sort(asc=FALSE);
+miArray.save("ruta/del/archivo/csv");
+"""
+
 
 contenido2 = """
 Array Prueb_a = new Array [ 15, 80, 68, 55, 48.13, -12.25 ];

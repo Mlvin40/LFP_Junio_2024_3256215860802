@@ -1,4 +1,4 @@
-
+""""
 import pandas as pd
 
 # Lista de números
@@ -8,4 +8,4 @@ numeros = [1, 2, 3, 4, 5]
 df = pd.DataFrame(numeros, columns=['Numeros'])
 
 # Exportar a CSV
-df.to_csv('lista_numeros.csv', index=False)
+df.to_csv('lista_numeros.csv', index=False)"""
