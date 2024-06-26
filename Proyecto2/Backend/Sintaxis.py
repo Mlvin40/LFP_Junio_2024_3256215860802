@@ -6,11 +6,12 @@ from Backend.Lexer import Lexer
 from Backend.Token import Token
 from Backend.Ordenamiento import Ordenamiento
 from Backend.Creador_csv import ExportadorCSV
-ordenamiento = Ordenamiento()
 
 class Parser:
-    def __init__(self, tokens) -> None:
+    def __init__(self, tokens, errores) -> None:
         self.tokens = tokens
+        self.errores_lexicos = errores
+        
         self.tokens.append(Token('$', 'EOF', -1, -1))
         self.errores_sintacticos = []
         self.cantidad_errores_sintacticos = 0
@@ -237,35 +238,25 @@ class Parser:
             self.error("Se esperaba 'save'")
             self.recuperar_modo_panico(";")        
             
-    # Fin de todo el parseo
-    def realizar_acciones(self):
-        #self.exportador.exportar([1,2,3,4,5], "rutapruba.csv")
-        if(self.cantidad_errores_sintacticos > 0):
-            print("No se puede realizar acciones debido a que hay errores sintácticos")
-            return
-        
-        #self.ordenar_elementos()
-        self.exportar_csv()
-    
-    
-            
-    #segundo ejecutar el arreglo de ordenamientos
-    #si el arreglo con la instruccion de ordenar existe, se debe ordenar el arreglo y guardar en la misma posicion con los datos ordenados
-        
+    ############################################################################################################
+    # Método para realizar las acciones de ordenar y guardar
+    # Si el arreglo con la instruccion de ordenar existe, se debe ordenar el arreglo y guardar en la misma posicion con los datos ordenados        
     def ordenar_elementos(self):
-        # Iterar sobre cada instrucción de ordenamiento en lista_ordenar
         for ordenar in self.lista_ordenar:
-            # Buscar el identificador en lista_elementos
-            for i, (id_token, elementos) in enumerate(self.lista_elementos):
+            for id_token, elementos in self.lista_elementos:
                 if ordenar[0].lexema == id_token.lexema:
-                    # Determinar el orden (ascendente o descendente)
-                    ascendente = ordenar[1]
-                    if ascendente == "TRUE":
-                        self.lista_elementos[i][1] = self.ordenador.burbujaAscendente(elementos)
+                    ascendente = ordenar[1].lexema == "TRUE"
+                    if ascendente:
+                        elementos_ordenados = self.ordenador.burbujaAscendente(elementos)
                     else:
-                        self.lista_elementos[i][1] = self.ordenador.burbujaDescendente(elementos)
-                   # self.lista_elementos[i] = (id_token, elementos_ordenados)
-    
+                        elementos_ordenados = self.ordenador.burbujaDescendente(elementos)
+                    
+                    # Actualizar la lista_elementos con los elementos ordenados
+                    for i in range(len(self.lista_elementos)):
+                        if self.lista_elementos[i][0].lexema == id_token.lexema:
+                            self.lista_elementos[i] = (id_token, elementos_ordenados)
+                            break
+        
     def exportar_csv(self):
         # Método para exportar datos a archivos CSV según las instrucciones en lista_guardar
         for guardar in self.lista_guardar:
@@ -276,45 +267,69 @@ class Parser:
                     print("exportando")
                     self.crearCSV.exportar(elementos[1], guardar[1].lexema)
                     
-                    #self.exportador.exportar(elementos[1], guardar[1].lexema)
+                    #self.exportador.exportar(elementos[1], guardar[1].lexema
+    
+    def realizar_acciones(self):
+        #self.exportador.exportar([1,2,3,4,5], "rutapruba.csv")
+        if (self.cantidad_errores_sintacticos > 0):
+            print("No se puede realizar acciones debido a que hay errores sintácticos y lexicos ")
+            return
+        
+        self.ordenar_elementos()
+        self.exportar_csv()
                     
                     
 Lexer = Lexer()
 contenido = """
-Array myArray = new Array [ 15, 80, 68, 55, 4813, 1225 ];
-myArray.sort(asc=TRUE);
+Array myArray = new Array [ 15.3, 80.5, 68.65, 55, 4813, 1225 ];
+myArray.sort(asc=FALSE);
 myArray.save("aversijalasadfsdafdsafsdaf.csv");
 """
 
-Lexer.analizar(contenido)
+contenido2 = """
+Array miArray1 = new Array [ 15, 80, 68, 55, 48.13, -12.25 ];
+miArray1.sort(asc=FALSE);
+miArray1.save("asd.csv");
 
-parser = Parser(Lexer.tokens)
+Array miArray2 = new Array [ 15, 80, 68, 55, 48.13, -12.25 ];
+miArray2.sort(asc=TRUE);
+miArray2.save("asdfdsaf.csv");
+
+Array miArray3 = new Array [ "hola", "mundo", "como", "estas" ];
+miArray3.sort(asc=TRUE);
+miArray3.save("sadfsa.csv");
+"""
+
+Lexer.analizar(contenido2)
+
+parser = Parser(Lexer.tokens, Lexer.token_errors)
 parser.parse()
 
-
 print("prueba de impresion de datos:")
-
 print("\nlista de elementos:")
 for lista in parser.lista_elementos:
     print("ID: ", lista[0].lexema)
     print("Elementos: ")
     for e in lista[1]:
         print(e.lexema)
-        
+    print("\n")
+    
 print("\nlista de elementos ordenados:")
-
+parser.ordenar_elementos()
+for lista in parser.lista_elementos:
+    print("ID: ", lista[0].lexema)
+    print("Elementos: ")
+    for e in lista[1]:
+        print(e.lexema)
+    print("\n")
+    
 print("\nlista de guardar:")
 for lista in parser.lista_guardar:
     print("ID: ", lista[0].lexema)
     print("Ruta:", lista[1].lexema)
+    print("\n")
 
-
-print("\nlista de ordenar:")    
-for lista in parser.lista_ordenar:
-    print("ID: ", lista[0].lexema)
-    print("Ascendente: ", lista[1].lexema)
-
-parser.realizar_acciones()
+#parser.realizar_acciones()
 
     
     
