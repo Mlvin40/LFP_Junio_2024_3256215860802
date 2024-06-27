@@ -23,10 +23,15 @@ class Parser:
         self.crearCSV = ExportadorCSV()
         self.ordenador = Ordenamiento()
         
+        self.fallo = False
+        
     def error(self, message):
         print(f"Error sintáctico: {message} en la línea {self.tokens[0].linea} , columna {self.tokens[0].columna}")
         self.errores_sintacticos.append(f"Error sintáctico: {message} en la línea {self.tokens[0].linea} , columna {self.tokens[0].columna}")        
         self.cantidad_errores_sintacticos += 1
+    
+    def hay_errores(self):
+        return self.fallo
     
     # Método para recuperar el modo pánico en caso de error
     def recuperar_modo_panico(self, nombre_tk_sincronizacion):
@@ -35,7 +40,7 @@ class Parser:
                 self.tokens.pop(0)
                 break
             self.tokens.pop(0)
-            
+         
     def parse(self):
         self.inicio()
         
@@ -273,64 +278,9 @@ class Parser:
         #self.exportador.exportar([1,2,3,4,5], "rutapruba.csv")
         if (self.cantidad_errores_sintacticos > 0):
             print("No se puede realizar acciones debido a que hay errores sintácticos y lexicos ")
+            self.fallo = True
             return
         
         self.ordenar_elementos()
         self.exportar_csv()
-                    
-                    
-Lexer = Lexer()
-contenido = """
-Array myArray = new Array [ 15.3, 80.5, 68.65, 55, 4813, 1225 ];
-myArray.sort(asc=FALSE);
-myArray.save("aversijalasadfsdafdsafsdaf.csv");
-"""
-
-contenido2 = """
-Array miArray1 = new Array [ 15, 80, 68, 55, 48.13, -12.25 ];
-miArray1.sort(asc=FALSE);
-miArray1.save("asd.csv");
-
-Array miArray2 = new Array [ 15, 80, 68, 55, 48.13, -12.25 ];
-miArray2.sort(asc=TRUE);
-miArray2.save("asdfdsaf.csv");
-
-Array miArray3 = new Array [ "hola", "mundo", "como", "estas" ];
-miArray3.sort(asc=TRUE);
-miArray3.save("sadfsa.csv");
-"""
-
-Lexer.analizar(contenido2)
-
-parser = Parser(Lexer.tokens, Lexer.token_errors)
-parser.parse()
-
-print("prueba de impresion de datos:")
-print("\nlista de elementos:")
-for lista in parser.lista_elementos:
-    print("ID: ", lista[0].lexema)
-    print("Elementos: ")
-    for e in lista[1]:
-        print(e.lexema)
-    print("\n")
-    
-print("\nlista de elementos ordenados:")
-parser.ordenar_elementos()
-for lista in parser.lista_elementos:
-    print("ID: ", lista[0].lexema)
-    print("Elementos: ")
-    for e in lista[1]:
-        print(e.lexema)
-    print("\n")
-    
-print("\nlista de guardar:")
-for lista in parser.lista_guardar:
-    print("ID: ", lista[0].lexema)
-    print("Ruta:", lista[1].lexema)
-    print("\n")
-
-#parser.realizar_acciones()
-
-    
-    
-    
+        

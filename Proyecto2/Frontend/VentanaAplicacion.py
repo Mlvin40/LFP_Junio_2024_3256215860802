@@ -1,26 +1,53 @@
+import sys
+import os
+# Añade la ruta del directorio principal al path
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from tkinter import filedialog, Tk, Label, Button, Canvas, ttk, messagebox, Text, Scrollbar
 from PIL import Image, ImageTk
+from Backend.Sintaxis import Parser as ParserClass
+from Backend.Lexer import Lexer as LexerClass
 
-
+contenido_archivo = ""
+    
 def cargar_archivo():
+    global contenido_archivo
     print("Cargando archivo")
     
-    archivo = filedialog.askopenfilename(filetypes=[("Archivos de código", "*.code")])
+    archivo = filedialog.askopenfilename(filetypes=[("Archivos de código", "*.lfp")])
     if archivo:
         with open(archivo, 'r', encoding= 'utf-8') as file:
             btn_ejecutar_archivo.configure(state="normal") # Habilitar el botón de ejecutar
             contenido_archivo = file.read() #Si ya habia contenido en el archivo se sobreescribe
+            textbox.insert("1.0", contenido_archivo)
             messagebox.showinfo("Mensaje", "Archivo cargado correctamente.")
     
 def reiniciar_atributos():
     print("Reiniciando atributos")
 
+def obtener_contenido():
+    global contenido_archivo
+    # Obtener el contenido del textbox
+    contenido_archivo = textbox.get("1.0", "end-1c")
+    
 def ejecutar_archivo():
-    print("Ejecutando archivo")
+    lexer = LexerClass() # Instanciar un objeto de la clase Lexer
+    obtener_contenido()
+    print(contenido_archivo)
+    
+    lexer.analizar(contenido_archivo)
+     
+    parser = ParserClass(lexer.tokens, lexer.token_errors) # Instanciar un objeto de la clase Parser
+    parser.parse()
+    parser.realizar_acciones()
+    if parser.hay_errores():
+        messagebox.showerror("Error", "Se encontraron errores en el archivo.")
+    else:
+        messagebox.showinfo("Mensaje", "Archivo ejecutado correctamente.")
     
 def reporte_T(tipo):
     print("Generando reporte")
-  
+
 def mostrar(event):
     print("Mostrando")
     
@@ -42,10 +69,10 @@ canva.pack(fill="both", expand=True)
 canva.create_image(0, 0, image=fondo, anchor="nw")
 
 # Para crear el textbox para mostrar el contenido del archivo
-anchoTexto = 620
+anchoTexto = 680
 altoTexto = 420
 textbox = Text(ventana_principal, bg="lightgrey")
-textbox.place(x=100, y=200, width=anchoTexto, height=altoTexto)
+textbox.place(x=80, y=200, width=anchoTexto, height=altoTexto)
 
 # ARCHIVOS
 lbl_archivos = Label(ventana_principal, text="ARCHIVOS")
