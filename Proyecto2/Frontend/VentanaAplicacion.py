@@ -20,17 +20,17 @@ list_errores_sintaticos = []
 def cargar_archivo():
     global contenido_archivo
     print("Cargando archivo")
-    
+
     archivo = filedialog.askopenfilename(filetypes=[("Archivos de código", "*.lfp")])
     if archivo:
         with open(archivo, 'r', encoding= 'utf-8') as file:
+            # Limpiar el contenido del textbox antes de cargar el archivo
+            textbox.delete("1.0", "end")
             btn_ejecutar_archivo.configure(state="normal") # Habilitar el botón de ejecutar
+            
             contenido_archivo = file.read() #Si ya habia contenido en el archivo se sobreescribe
             textbox.insert("1.0", contenido_archivo)
             messagebox.showinfo("Mensaje", "Archivo cargado correctamente.")
-    
-def reiniciar_atributos():
-    print("Reiniciando atributos")
 
 def obtener_contenido():
     global contenido_archivo
@@ -115,7 +115,7 @@ btn_abrir_archivo = Button(ventana_principal, text="Abrir Archivo", command=carg
 btn_abrir_archivo.place(x=20, y=60)
 
 # Para ejecutar el archivo
-btn_ejecutar_archivo = Button(ventana_principal, text="Ejecutar Archivo", command=ejecutar_archivo)
+btn_ejecutar_archivo = Button(ventana_principal, text="Ejecutar Archivo",command=ejecutar_archivo, state="disabled")
 btn_ejecutar_archivo.place(x=360, y=640)
 
 # REPORTES 

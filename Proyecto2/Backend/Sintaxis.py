@@ -1,7 +1,3 @@
-import sys
-import os
-# Añade la ruta del directorio principal al path
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from Backend.Lexer import Lexer
 from Backend.Token import Token
 from Backend.Ordenamiento import Ordenamiento
@@ -12,7 +8,7 @@ class Parser:
         self.tokens = tokens
         self.errores_lexicos = errores
         
-        self.tokens.append(Token('$', 'EOF', -1, -1))
+        self.tokens.append(Token('$', 'EOF', 0, 0)) # Agregar token de fin de archivo
         self.errores_sintacticos = []
         self.cantidad_errores_sintacticos = 0
         
@@ -227,7 +223,6 @@ class Parser:
                             
                             #Aquí se debe manejar la instruccion
                             #almacenar el id del array y la ruta del archivo
-                               
                             print(f"Guardar : ID = {id_token.lexema}, Ruta = {path_token.lexema}")
                             self.lista_guardar.append((id_token, path_token))
                             
@@ -277,7 +272,7 @@ class Parser:
     def realizar_acciones(self):
         #self.exportador.exportar([1,2,3,4,5], "rutapruba.csv")
         if (self.cantidad_errores_sintacticos > 0):
-            print("No se puede realizar acciones debido a que hay errores sintácticos y lexicos ")
+            print("No se puede realizar acciones debido a que hay errores sintácticos y lexicos")
             self.fallo = True
             return
         

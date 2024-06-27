@@ -1,9 +1,3 @@
-import sys
-import os
-
-# Añade la ruta del directorio principal al path
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
 from Backend.Token import Token
 from Backend.TokenError import TokenError
 
