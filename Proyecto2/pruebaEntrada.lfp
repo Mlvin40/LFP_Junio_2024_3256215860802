@@ -1,12 +1,9 @@
 
-
-contenido = """
 Array myArray = new Array [ 15.3, 80.5, 68.65, 55, 4813, 1225 ];
 myArray.sort(asc=FALSE);
 myArray.save("aversijalasadfsdafdsafsdaf.csv");
-"""
 
-contenido2 = """
+
 Array miArray1 = new Array [ 15, 80, 68, 55, 48.13, -12.25 ];
 miArray1.sort(asc=FALSE);
 miArray1.save("contenido1.csv");
@@ -18,5 +15,5 @@ miArray2.save("contenido2.csv");
 Array miArray3 = new Array [ "hola", "mundo", "como", "estas" ];
 miArray3.sort(asc=TRUE);
 miArray3.save("contenido3.csv");
-"""
+
 

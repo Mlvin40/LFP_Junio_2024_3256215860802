@@ -1,5 +1,7 @@
 import sys
 import os
+import copy
+
 # Añade la ruta del directorio principal al path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -7,9 +9,14 @@ from tkinter import filedialog, Tk, Label, Button, Canvas, ttk, messagebox, Text
 from PIL import Image, ImageTk
 from Backend.Sintaxis import Parser as ParserClass
 from Backend.Lexer import Lexer as LexerClass
+from Backend.Reportes import Reporte
 
 contenido_archivo = ""
-    
+
+list_tokens = []
+list_errores_lexicos = []
+list_errores_sintaticos = []
+
 def cargar_archivo():
     global contenido_archivo
     print("Cargando archivo")
@@ -31,14 +38,24 @@ def obtener_contenido():
     contenido_archivo = textbox.get("1.0", "end-1c")
     
 def ejecutar_archivo():
+    global list_tokens, list_errores_lexicos, list_errores_sintaticos
+    
     lexer = LexerClass() # Instanciar un objeto de la clase Lexer
     obtener_contenido()
     print(contenido_archivo)
     
     lexer.analizar(contenido_archivo)
+    
+    # Obtener los tokens y errores lexicos
+    list_tokens = copy.deepcopy(lexer.tokens)
+    list_errores_lexicos = lexer.token_errors
      
     parser = ParserClass(lexer.tokens, lexer.token_errors) # Instanciar un objeto de la clase Parser
     parser.parse()
+    
+    # Obtener los errores sintacticos
+    list_errores_sintaticos = parser.errores_sintacticos
+    
     parser.realizar_acciones()
     if parser.hay_errores():
         messagebox.showerror("Error", "Se encontraron errores en el archivo.")
@@ -46,7 +63,22 @@ def ejecutar_archivo():
         messagebox.showinfo("Mensaje", "Archivo ejecutado correctamente.")
     
 def reporte_T(tipo):
-    print("Generando reporte")
+    gen = Reporte()
+    #Tipo 1 = Reporte de Tokens Tipo 2 = Reporte de Errores
+    ruta_reporte = filedialog.asksaveasfilename(defaultextension=".html", filetypes=[("Archivos HTML", "*.html")])
+    if ruta_reporte:
+        try:
+            with open(ruta_reporte, 'w') as file:
+                if tipo == 1:
+                    html = gen.obtenerReporteTokens(list_tokens)    
+                else:
+                    html = gen.obtenerReporteErrores(list_errores_lexicos, list_errores_sintaticos)      
+                file.write(html)
+                print("Reporte guardado en:", ruta_reporte)
+                messagebox.showinfo("Mensaje", f"Reporte creado exitosamente. \nReporte guardado en: {ruta_reporte}")
+                
+        except Exception as e:
+            print("Error al guardar el reporte:", e)
 
 def mostrar(event):
     print("Mostrando")

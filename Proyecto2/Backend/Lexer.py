@@ -1,5 +1,6 @@
 import sys
 import os
+
 # Añade la ruta del directorio principal al path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -8,7 +9,6 @@ from Backend.TokenError import TokenError
 
 class Lexer:
     def __init__(self):
-        
         # Listas que almacena los tokens validos y los errores lexicos
         self.tokens = []
         self.token_errors = []
@@ -204,5 +204,5 @@ class Lexer:
             # Incrementar el contador de columnas si el caracter no es un espacio en blanco o si no se encuentra en un comentario
             if not caracter.isspace() or estado == 4:
                 columna += 1
-                
+                          
     ####### FIN DEL ANALISIS LEXICO #######
