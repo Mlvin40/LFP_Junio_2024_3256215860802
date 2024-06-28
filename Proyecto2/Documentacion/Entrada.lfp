@@ -1,0 +1,12 @@
+/* 
+Este es el archivo de entrada
+*/
+
+
+// Inicio
+Array myArray = new Array [ 15.3, 80.5, 68.65, 55, 4813, 1225 ];
+myArray.sort(asc=FALSE);
+myArray.save("archivo1.csv");
+
+
+

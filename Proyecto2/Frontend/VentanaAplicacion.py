@@ -130,5 +130,9 @@ btn_reporte_token.place(x=300, y=60)
 bnt_reporte_errores = Button(ventana_principal, text="Reporte de Errores", command= lambda:reporte_T(2))
 bnt_reporte_errores.place(x=300, y=100)
 
+# Para el arbol de derivacion
+btn_arbol_derivacion = Button(ventana_principal, text="Arbol Derivacion")
+btn_arbol_derivacion.place(x=300, y= 140)
+
 # Mostrar la ventana
 ventana_principal.mainloop()
